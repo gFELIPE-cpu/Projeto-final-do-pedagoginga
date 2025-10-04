@@ -16,14 +16,14 @@ let board = ["", "", "", "", "", "", "", "", ""]
 //Variavvel para controlar se o jogo ainda está em andamento
 let gameActive = true;
 
-const winnningConditions = [
-    [0, 1, 2] //linha superior
-    [2, 4, 5]//linha meio
-    [6, 7, 8]//linha inferior
-    [0, 3, 6]//coluna esquerda
-    [1, 4, 7]//coluna meio
-    [2, 5, 8]//coluna direita
-    [0, 4, 8]//diagonal principal
+const winningConditions = [
+    [0, 1, 2], //linha superior
+    [3, 4, 5],//linha meio
+    [6, 7, 8],//linha inferior
+    [0, 3, 6],//coluna esquerda
+    [1, 4, 7],//coluna meio
+    [2, 5, 8],//coluna direita
+    [0, 4, 8],//diagonal principal
     [2, 4, 6]//diagonal secundária
 ];
 
@@ -32,7 +32,7 @@ function initializeGame() {
         cells[i].addEventListener("click", handleCellClick)
     }
     restartBtn.addEventListener("click", restartGame);
-    statusText.textContent = `Vez do Jogador +  ${currentPlayer}`;
+    statusText.textContent = `Vez do Jogador ${currentPlayer}`;
 }
 
 function handleCellClick(event) {
@@ -44,8 +44,8 @@ function handleCellClick(event) {
         return
     }
 
-board[index] - currentPlayer;
-cell.textContent = currentPlayer;
+    board[index] = currentPlayer;
+    cell.textContent = currentPlayer;
 
     if(currentPlayer === "X"){
         cell.classList.add("x")
@@ -53,5 +53,55 @@ cell.textContent = currentPlayer;
         cell.classList.add("o")
     }
 
-checkWinner();
+    checkWinner();
 }
+
+
+function checkWinner() {
+    let roundWon = false;
+
+    //percorre todas as condições de vitórias
+    for (let i = 0; i < winningConditions.length; i+=1) {
+        const [a, b, c] = winningConditions[i]
+        if(board[a] && board[a] === board[b] && board[a] === board[c]){
+            roundWon = true;
+            console.log("fim!")
+            break;
+        }
+    }
+
+    //Se alguém venceu
+    if (roundWon) {
+        statusText.textContent = `Jogador ${currentPlayer} venceu!`;
+        gameActive = false;
+        return;
+    }
+
+    // se todas as células estiverem preenchidas e ninguém ganhou, empate
+    if (!board.includes("")) {
+        statusText.textContent = "Empate!";
+        gameActive = false;
+        return;
+    }
+    // inverte jogadores
+    if (currentPlayer === "X"){
+        currentPlayer = "O";
+    } else {
+        currentPlayer = "X";
+    }
+    statusText.textContent = `Vez do jogador ${currentPlayer}`;
+}  
+
+function restartGame() {
+        currentPlayer = "X";
+        board = ["", "", "", "", "", "", "", "", ""]
+        gameActive = true;
+        statusText.textContent = `Vez do jogador ${currentPlayer}`;
+
+        for (let i = 0; i < cells.length; i += 1) {
+            cells[i].textContent = "";
+            cells[i].classList.remove("x");
+            cells[i].classList.remove("o");
+        }
+}
+initializeGame();
